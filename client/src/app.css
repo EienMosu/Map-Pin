@@ -1,0 +1,80 @@
+.app {
+  position: relative;
+}
+
+.card {
+  width: 250px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+label {
+  width: max-content;
+  color: crimson;
+  font-size: 13px;
+  border-bottom: 0.5px solid crimson;
+  margin: 3px 0px;
+}
+
+.desc {
+  font-size: 14px;
+}
+
+.star {
+  color: gold;
+}
+
+.username {
+  font-size: 14px;
+}
+
+.date {
+  font-size: 12px;
+}
+
+input {
+  border: none;
+  border-bottom: 1px solid gray;
+  outline-style: none;
+}
+
+.createButton {
+  width: 50%;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  background-color: crimson;
+  padding: 7px 0px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+.loginButton {
+  margin-top: 10px;
+  margin-right: 15px;
+  width: 100px;
+  border: none;
+  padding: 7px;
+  font-size: 16px;
+  color: white;
+  background-color: teal;
+  border-radius: 5px;
+  cursor: pointer;
+  float: right;
+}
+
+.registerButton {
+  margin-top: 10px;
+  margin-right: 15px;
+  width: 100px;
+  border: none;
+  padding: 7px;
+  font-size: 16px;
+  color: white;
+  background-color: slateblue;
+  border-radius: 5px;
+  cursor: pointer;
+  float: right;
+}
