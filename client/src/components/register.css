@@ -22,7 +22,7 @@
   margin-bottom: 20px;
 }
 
-h1 {
+.registerTitle {
   color: slateblue;
   font-size: 24px;
 }
@@ -42,7 +42,7 @@ input {
   margin-top: 20px;
 }
 
-.sendButton {
+.sendRegisterButton {
   margin-top: 30px;
   font-size: 18px;
   border: none;
@@ -50,6 +50,26 @@ input {
   padding: 10px;
   border-radius: 5px;
   color: white;
-  background-color: crimson;
+  background-color: slateblue;
+  cursor: pointer;
+}
+
+.success {
+  font-size: 14px;
+  color: rgb(5, 196, 5);
+  margin-top: 10px;
+}
+
+.failure {
+  font-size: 14px;
+  color: crimson;
+  margin-top: 10px;
+}
+
+.registerCancel {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  color: slateblue;
   cursor: pointer;
 }

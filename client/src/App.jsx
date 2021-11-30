@@ -9,11 +9,21 @@ import axios from "axios";
 import * as timeago from "timeago.js";
 // Css
 import "./app.css";
+// Components
 import Register from "./components/Register";
 import Login from "./components/Login";
 
+import 'mapbox-gl/dist/mapbox-gl.css';
+import mapboxgl from 'mapbox-gl';
+
+// @ts-ignore
+// eslint-disable-next-line import/no-webpack-loader-syntax
+mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
+
 const App = () => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const myStorage = window.localStorage;
+
+  const [currentUser, setCurrentUser] = useState(myStorage.getItem("user"));
   const [pins, setPins] = useState([]);
   const [newPlace, setNewPlace] = useState(null);
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
@@ -47,9 +57,11 @@ const App = () => {
     setNewPlace(null);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
     try {
-      await axios.post("/pins", {
+      const response = await axios.post("https://map-pin-app.herokuapp.com/api/pins", {
         username: currentUser,
         title,
         desc,
@@ -58,7 +70,8 @@ const App = () => {
         long: newPlace.long,
       });
 
-      window.location.reload(false);
+      setPins([...pins, response.data]);
+      setNewPlace(null);
     } catch (err) {
       console.log(err);
     }
@@ -79,24 +92,15 @@ const App = () => {
     setLogin(false);
   };
 
-  const handleLoginSubmit = async (username,password) => {
-    try {
-      const response = await axios.post("/users/login", {
-        username,
-        password,
-      });
-
-      console.log(response);
-      window.location.reload(false);
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  const handleLogout = () => {
+    myStorage.removeItem("user");
+    setCurrentUser(null);
+  };
 
   useEffect(() => {
     const getPins = async () => {
       try {
-        const response = await axios.get("/pins");
+        const response = await axios.get("https://map-pin-app.herokuapp.com/api/pins");
 
         setPins(response.data);
       } catch (err) {
@@ -111,17 +115,24 @@ const App = () => {
     <div className="app">
       <ReactMapGL
         {...viewport}
-        mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
+        mapboxApiAccessToken="pk.eyJ1IjoiYnVja2V0bGVzIiwiYSI6ImNrd2k1cnU4NTBtMTIycHBreGZsNjhhY28ifQ.NWvkzo7NoS-r3uLQj9Izug"
         onViewportChange={(nextViewport) => setViewport(nextViewport)}
         mapStyle="mapbox://styles/bucketles/ckwjmvbo73dmr14lhpjccwjfh"
-        onDblClick={handleAddClick}
+        onDblClick={currentUser && handleAddClick}
         onClick={handleClose}
       >
+        <span>After Login, Double Click to Add a Pin!</span>
         {currentUser ? (
-          <button onClick={() => setCurrentUser(null)}>Logout</button>
+          <button className="logoutButton" onClick={handleLogout}>
+            Log out
+          </button>
         ) : (
           <>
-            <button className="loginButton" onClick={handleLoginClick} handleloginsubmit={handleLoginSubmit}>
+            <button
+              className="loginButton"
+              onClick={handleLoginClick}
+              // handleloginsubmit={handleLoginSubmit}
+            >
               Login
             </button>
             <button className="registerButton" onClick={handleRegisterClick}>
@@ -135,8 +146,8 @@ const App = () => {
             <Marker
               latitude={pin.lat}
               longitude={pin.long}
-              offsetLeft={-20}
-              offsetTop={-10}
+              offsetLeft={-viewport.zoom * 3.5}
+              offsetTop={-viewport.zoom * 7}
             >
               <Room
                 style={{
@@ -164,7 +175,9 @@ const App = () => {
                   <label>Review</label>
                   <p className="desc">{pin.desc}</p>
                   <label>Rating</label>
-                  <div className="stars">{pin.rating}</div>
+                  <div className="stars">
+                    {Array(pin.rating).fill(<Star className="star" />)}
+                  </div>
                   <label>Information</label>
                   <span className="username">
                     Created by <b>{pin.username}</b>
@@ -222,8 +235,14 @@ const App = () => {
             </div>
           </Popup>
         )}
-        {register && <Register />}
-        {login && <Login />}
+        {register && <Register register={setRegister} />}
+        {login && (
+          <Login
+            login={setLogin}
+            myStorage={myStorage}
+            setCurrentUser={setCurrentUser}
+          />
+        )}
       </ReactMapGL>
     </div>
   );

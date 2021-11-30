@@ -78,3 +78,17 @@ input {
   cursor: pointer;
   float: right;
 }
+
+.logoutButton {
+  margin-top: 10px;
+  margin-right: 15px;
+  width: 100px;
+  border: none;
+  padding: 7px;
+  font-size: 16px;
+  color: white;
+  background-color: crimson;
+  border-radius: 5px;
+  cursor: pointer;
+  float: right;
+}

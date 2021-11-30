@@ -1,25 +1,49 @@
-import { Room } from "@material-ui/icons";
-import axios from "axios";
 import React, { useState } from "react";
+// Material UI Icons
+import { Cancel, Room } from "@material-ui/icons";
+// Axios
+import axios from "axios";
+// CSS
 import "./login.css";
 
-const Login = (props) => {
+const Login = ({ login, myStorage, setCurrentUser }) => {
+  const [success, setSuccess] = useState(null);
+  const [failure, setFailure] = useState(null);
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (event) => {
+  const handleLoginSubmit = async (event) => {
     event.preventDefault();
 
-    props.handleloginsubmit(username, password);
+    try {
+      const response = await axios.post(
+        "https://map-pin-app.herokuapp.com/api/users/login",
+        {
+          username,
+          password,
+        }
+      );
+
+      myStorage.setItem("user", response.data.username);
+      setCurrentUser(response.data.username);
+      login(null);
+      setSuccess(true);
+      setFailure(null);
+    } catch (err) {
+      console.log(err);
+      setSuccess(null);
+      setFailure(true);
+    }
   };
 
   return (
     <div className="login">
       <div className="title">
-        <Room style={{ color: "slateblue" }} />
-        <h1>Ozkan's Pin App</h1>
+        <Room style={{ color: "teal" }} />
+        <h1>OzkanPin</h1>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleLoginSubmit}>
         <input
           type="text"
           placeholder="Username"
@@ -34,6 +58,14 @@ const Login = (props) => {
         />
         <button className="sendButton">Login</button>
       </form>
+      {success && (
+        <span className="successfull">
+          Successfull! You can add your pins now!
+        </span>
+      )}
+      {failure && <span className="failed">Wrong Cridentials!</span>}
+
+      <Cancel className="loginCancel" onClick={() => login(null)} />
     </div>
   );
 };
